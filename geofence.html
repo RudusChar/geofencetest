@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <title>Versuch eines Geofences</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, inital-scale=1.0">
+</head>
+
+<header>
+    <h1>Geofence-Versuch</h1>
+</header>
+
+<body>
+    <p>Klicke auf den Los Knopf. Dann werden die Koordinaten ermittelt</p>
+    <p>Falls es zu einem Fehler kommt, wird die Art des Fehlers angegeben.</p>
+    <button
+    id="los">Los!</button>
+        <p id="ausgabe"></p>
+        <p id="sprich">Kommentar: -</p>
+        <button id="aktion">Aktion möglich:</button>
+</body>
+    
+<script>
+    // Startknopf für Geolocation
+    var button = document.getElementById('los');
+    button.addEventListener('click', ermittlePosition);
+    var ausgabe = document.getElementById('ausgabe');
+    var text = document.getElementById("sprich");
+
+    // Geolocation checken
+    function ermittlePosition() {
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(zeigePosition, zeigeFehler, {enableHighAccury: true, timeout: 20000, maximumAge: 50000 });
+        } else {
+            ausgabe.innerHTML = 'Ihr Browser unterstützt keine Geolocation.';
+        }
+    }
+
+    // Position anzeigen
+    function zeigePosition(position) {
+        var breite = position.coords.latitude;
+        var laenge = position.coords.longitude;
+        var genau = position.coords.accuracy;
+        ausgabe.innerHTML = "Ihre Koordinaten sind:<br> Breite: " + breite +
+            "<br>Länge: " + laenge + '<br>Genaugikeit: ' + genau;
+
+    // Geofence Zonen
+        if (breite>=51.42728 && breite <= 51.42764 && laenge>=6.65656 && laenge <= 6.65740) {
+            text.innerHTML = "Zone 1 erreicht";
+        } else {
+            text.innerHTML = "Außerhalb Zone 1";
+        }
+
+   }
+
+    // Fehlermeldungen abfangen
+    function zeigeFehler(error) {
+        switch (error.code) {
+        case error.PERMISSION_DENIED:
+            ausgabe.innerHTML = "Benutzer lehnte Standortabfrage ab."
+            break;
+        case error.POSITION_UNAVAILABLE:
+            ausgabe.innerHTML = "Standortdaten sind nicht verfügbar."
+            break;
+        case error.TIMEOUT:
+            ausgabe.innerHTML = "Die Standortabfrage dauerte zu lange (Time-out)."
+            break;
+        case error.UNKNOWN_ERROR:
+            ausgabe.innerHTML = "unbekannter Fehler."
+            break;
+        }
+    }
+
+</script>
